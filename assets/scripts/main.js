@@ -5,11 +5,13 @@ import './vendor/fontawesome'
 
 window.addEventListener('load', () => {
   const btnRecord = $('.btn-record')
-  // const btnStop = $('.btn-stop')
+  const btnStop = $('.btn-stop')
+
+  let mediaRecorder
+  let chunks = []
+  const videoElement = document.querySelector('#video')
 
   btnRecord.on('click', () => {
-    let supportedConstraints = navigator.mediaDevices.getSupportedConstraints();
-
     const constraints = {
       video: {
         width: { max: 1200, ideal: 1920 },
@@ -22,17 +24,36 @@ window.addEventListener('load', () => {
       }
     }
 
-    navigator.mediaDevices.enumerateDevices().then(devices => {
-      console.log(devices)
-    })
-
-    console.log(supportedConstraints)
-
     navigator.mediaDevices.getUserMedia(constraints).then(stream => {
-      console.log(stream.getVideoTracks()[0].getCapabilities())
-      const videoElement = document.querySelector('#video')
+      mediaRecorder = new MediaRecorder(stream)
+      mediaRecorder.start()
+
+      mediaRecorder.ondataavailable = (e) => {
+        chunks.push(e.data)
+      }
+
       videoElement.srcObject = stream;
       videoElement.play()
     })
+  })
+
+  btnStop.on('click', () => {
+    videoElement.pause()
+    mediaRecorder.stop()
+
+    mediaRecorder.onstop = () => {
+      const blob = new Blob(chunks, { 'type': 'video/mp4;' })
+
+      const recordedVideoUrl = URL.createObjectURL(blob)
+
+      const a = document.createElement('a')
+
+      a.setAttribute('href', recordedVideoUrl)
+      a.setAttribute('download', 'record')
+
+      a.click()
+
+      chunks = []
+    }
   })
 })
