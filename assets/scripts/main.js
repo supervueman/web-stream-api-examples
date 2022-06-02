@@ -12,8 +12,8 @@ window.addEventListener('load', () => {
 
     const constraints = {
       video: {
-        width: { max: 640, ideal: 1920 },
-        height: { min: 400, ideal: 1080 },
+        width: { max: 1200, ideal: 1920 },
+        height: { max: 600, ideal: 1080 },
         aspectRatio: { ideal: 1.7777777778 }
       },
       audio: {
