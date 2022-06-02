@@ -6,9 +6,7 @@ import './vendor/fontawesome'
 window.addEventListener('load', () => {
   let supportedConstraints = navigator.mediaDevices.getSupportedConstraints();
 
-  console.log(supportedConstraints)
-
-  navigator.mediaDevices.getUserMedia({
+  const constraints = {
     video: {
       width: { max: 640, ideal: 1920 },
       height: { min: 400, ideal: 1080 },
@@ -18,8 +16,16 @@ window.addEventListener('load', () => {
       sampleSize: 16,
       channelCount: 2
     }
-  }).then(stream => {
-    console.log(stream)
+  }
+
+  navigator.mediaDevices.enumerateDevices().then(devices => {
+    console.log(devices)
+  })
+
+  console.log(supportedConstraints)
+
+  navigator.mediaDevices.getUserMedia(constraints).then(stream => {
+    console.log(stream.getVideoTracks()[0].getCapabilities())
     const videoElement = document.querySelector('#video')
     videoElement.srcObject = stream;
     videoElement.play()
